@@ -113,21 +113,7 @@ WHERE account_type_id != 99 -- Excludes internal QA/Testing accounts from revenu
 
 It is critical to emphasize the purpose and goal of a section of code rather than simply explaining how the syntax functions. When returning to update a query, it is far more helpful to understand the why rather than the what. Comments shouldn't just translate the SQL into English; instead, they should explain the business logic driving the code.
 
-(Example SQL code here with improved comments)
-```sql
-
--- Corrected Version
-
-```
-
 Finally, commenting is an excellent tool for debugging complex queries. Block comments (/* ... */) are incredibly useful to test data integrity without having to rewrite or delete complex logic. Just be sure not to save or commit any queries with active logic left in block comments to avoid errors and future confusion.
-
-(Example of block comment sectioning out a piece of code)
-```sql
-
--- Corrected Version
-
-```
       
 ## Query Logic: Understanding SQL to Improve Execution Times
 
