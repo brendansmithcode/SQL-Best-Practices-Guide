@@ -124,11 +124,22 @@ Advocate for using Common Table Expressions (CTEs) using the WITH clause instead
 
 ```sql
 -- Incorrect (Nested subqueries must be read inside-out)
-SELECT * FROM customer_data;
+SELECT * FROM (
+    SELECT customer_id, SUM(total) as revenue FROM (
+        SELECT * FROM orders WHERE status = 'shipped'
+    ) shipped_orders GROUP BY customer_id
+) revenue_summary WHERE revenue > 1000;
 
 -- Correct (CTEs read logically from top to bottom)
-SELECT customer_id, first_name, email, lifetime_value 
-FROM customer_data;
+WITH ShippedOrders AS (
+    SELECT * FROM orders WHERE status = 'shipped'
+),
+RevenueSummary AS (
+    SELECT customer_id, SUM(total) AS revenue 
+    FROM ShippedOrders 
+    GROUP BY customer_id
+)
+SELECT * FROM RevenueSummary WHERE revenue > 1000;
 ```
 
 ### Window Functions
@@ -149,10 +160,11 @@ Selecting everything from a table wastes critical memory and network resources, 
 
 ```sql
 -- Incorrect (Wastes memory on unused columns)
-
+SELECT * FROM customer_data;
 
 -- Correct (Only pulls the exact data required for the report)
-
+SELECT customer_id, first_name, email, lifetime_value 
+FROM customer_data;
 ```
 
 ### SARGable Queries (Search Argument Able)
