@@ -307,13 +307,11 @@ CREATE TABLE us_states (
 Indexes work much like the index at the back of a textbook, allowing the database engine to locate andretrieve specific rows instantly rather than scanning millions of unrelated records. It is vital to understand the difference between a clustered index (how the data is physically sorted on the disk, usually the Primary Key) and a non-clustered index (a separate lookup table mapping to the physical data). Knowing which columns are heavily filtered and ensuring they are properly indexed is the difference between a query running in two seconds versus two hours.
 
 ```sql
--- Incorrect (Forcing a full table scan by frequently filtering on an unindexed column)
 -- Without an index on 'email', the database must read every row to find a match.
 SELECT customer_id, first_name 
 FROM users 
 WHERE email = 'john.doe@email.com';
 
--- Correct (Communicating with the DBA to create a non-clustered index for faster lookups)
 -- Creating an index on the frequently searched column
 CREATE NONCLUSTERED INDEX idx_users_email 
 ON users(email);
