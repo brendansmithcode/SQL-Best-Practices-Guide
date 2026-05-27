@@ -9,9 +9,8 @@ SQL is a highly flexible language that will often execute successfully regardles
 **Incorrect (Hard to scan):**
 ```sql
 select customer_id, count(order_id) as total_orders from sales_data where region = 'south' group by customer_id;
-```
 
-```sql
+# Corrected Version
 SELECT customer_id, SUM(total)
 FROM orders
 GROUP BY customer_id;
@@ -25,9 +24,9 @@ query from running, or when cross-training tasks between team members.
 SQL keywords (such as SELECT, FROM, WHERE, etc.) should always be capitalized to visually differentiate SQL logic from table and column names. This rule also applies to aggregate functions like SUM() and operators like DISTINCT.
 
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
 
 ### Indentation and Spacing
@@ -36,9 +35,9 @@ Consistent use of indentation and spacing is critical for identifying errors and
 
 (Example of Corrected Indentation)
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
 
 This lack of readability becomes especially pronounced when dealing with nested conditions or multiple JOIN clauses. By explicitly aligning your ON statements and CASE logic (see the corrected example above), you prevent structural errors and make it immediately obvious how different tables relate to one another.
@@ -50,9 +49,9 @@ When working across multiple tables or databases, it can be easy to get confused
 (Example of Corrected Alias Code)
 
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
 
 When utilizing column aliases, you may occasionally encounter an error where SQL fails to recognize your newly created field name. This happens because of the logical Order of Execution in SQL. If a column is renamed in the SELECT statement, SQL will not be able to identify that new alias inside the WHERE clause, because the database evaluates the WHERE filter before it ever processes the SELECT statement.
@@ -80,9 +79,9 @@ Header blocks are highly recommended when creating longer or more complex querie
 (Example SQL code here)
 
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
 
 You should also utilize section headers above large blocks of code, as well as inline comments, to provide context for specific statements.
@@ -90,27 +89,27 @@ You should also utilize section headers above large blocks of code, as well as i
 (Header and inline SQL comment code here)
 
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
 
 It is critical to emphasize the purpose and goal of a section of code rather than simply explaining how the syntax functions. When returning to update a query, it is far more helpful to understand the why rather than the what. Comments shouldn't just translate the SQL into English; instead, they should explain the business logic driving the code.
 
 (Example SQL code here with improved comments)
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
 
 Finally, commenting is an excellent tool for debugging complex queries. Block comments (/* ... */) are incredibly useful to test data integrity without having to rewrite or delete complex logic. Just be sure not to save or commit any queries with active logic left in block comments to avoid errors and future confusion.
 
 (Example of block comment sectioning out a piece of code)
 ```sql
-```
 
-```sql
+# Corrected Version
+
 ```
       
 ## Query Logic: Understanding SQL to Improve Execution Times
@@ -144,24 +143,20 @@ Correct (Only pulls the exact data required for the report)
 
 Wrapping a column in a function inside a WHERE clause strips the database engine of its ability to use its indexes, forcing it to evaluate every single row in a full table scan. By isolating the column and moving the calculation to the other side of the operator, you make the query "SARGable." This allows the database to instantly locate the exact rows needed, unlocking massive performance gains on large datasets.
 
-Incorrect (Forces a full table scan because it alters the column before comparing)
 ```sql
-```
+# Incorrect (Forces a full table scan because it alters the column before comparing)
+# Correct (Allows the database engine to utilize the date index)
 
-Correct (Allows the database engine to utilize the date index)
-```sql
 ```
 
 ### Filtering Early
 
 It is crucial to reduce the dataset size as early as possible using WHERE clauses before applying heavy JOINs or GROUP BY aggregations. Applying restrictive date and category filters in a CTE or staging step minimizes the memory footprint required for subsequent operations. This ensures that the database engine is only spending processing power to join and group the exact records necessary for the final report.
 
-Incorrect (Joins massive tables together first, then filters the results)
 ```sql
-```
+# Incorrect (Joins massive tables together first, then filters the results)
+# Correct (Filters the tables down in CTEs before joining and grouping)
 
-Correct (Filters the tables down in CTEs before joining and grouping)
-```sql
 ```
 
 ## Defensive Coding: Validating Data to Pull from the ‘Source of Truth’
@@ -171,36 +166,30 @@ Real-world business data is rarely perfectly clean. A strong data analyst antici
 ### Taming NULL Values
 Unexpected NULL values can easily break arithmetic calculations, skew aggregations, or cause blank visuals in dashboards. Utilize functions like COALESCE() or ISNULL() to set explicit default values (like converting a missing discount amount to 0). Handling these gaps proactively ensures that financial totals and critical metrics remain accurate rather than failing silently when data is missing.
 
-Incorrect (If discount is NULL, the entire calculation becomes NULL)
 ```sql
-```
+# Incorrect (If discount is NULL, the entire calculation becomes NULL)
+# Correct (Defaults NULLs to 0 to preserve the calculation)
 
-Correct (Defaults NULLs to 0 to preserve the calculation)
-```sql
 ```
 
 ### Deduplication Strategies
 
 Joining a primary table to a one-to-many table without proper filtering can accidentally duplicate rows, artificially inflating revenue numbers and throwing off KPIs. While DISTINCT can sometimes patch this, using ROW_NUMBER() is a far more precise strategy. Relying on window functions to partition and order data guarantees that you are pulling the exact, most recent record required for your analysis.
 
-Incorrect (Blindly joining causes duplicate revenue if the user has multiple updates)
 ```sql
-```
+# Incorrect (Blindly joining causes duplicate revenue if the user has multiple updates)
+# Correct (Uses a CTE and ROW_NUMBER to deliberately grab only the most recent status)
 
-Correct (Uses a CTE and ROW_NUMBER to deliberately grab only the most recent status)
-```sql
 ```
 
 ### Standardizing Formats
 
 It is incredibly important to cast and standardize text fields (e.g., using TRIM(), UPPER(), or LOWER()) so they group correctly in final reports. Inconsistent casing or accidental trailing spaces created by manual data entry can cause aggregations to split what should be a single category into multiple distinct rows. By aggressively standardizing formats in your base queries, you guarantee uniform, reliable reporting across the entire organization.
 
-Incorrect (Will result in multiple distinct rows for "New York", "new york", and "NEW YORK ")
 ```sql
-```
+# Incorrect (Will result in multiple distinct rows for "New York", "new york", and "NEW YORK ")
+# Correct (Standardizes casing and removes hidden trailing spaces before grouping)
 
-Correct (Standardizes casing and removes hidden trailing spaces before grouping)
-```sql
 ```
 
 ## Database Structure: Communicating for Structural Optimization
@@ -211,34 +200,28 @@ Business data needs are ever-growing and evolving, meaning today's unused fields
 
 Using a VARCHAR(255) when a VARCHAR(10) will suffice, or utilizing a BIGINT instead of an standard INT, bloats the database and drastically slows down processing. Over-allocating memory for data types drastically increases the storage footprint and degrades query performance during large data scans. Ensuring that data types perfectly match their actual contents preserves index efficiency, saves disk space, and speeds up overall processing times.
 
-Incorrect (Wasting memory on generic, oversized data types)
 ```sql
-```
+# Incorrect (Wasting memory on generic, oversized data types)
+# Correct (Using precise data types to save storage and speed up memory allocation)
 
-Correct (Using precise data types to save storage and speed up memory allocation)
-```sql
 ```
 
 ### Understanding Indexes
 
 Indexes work much like the index at the back of a textbook, allowing the database engine to locate andretrieve specific rows instantly rather than scanning millions of unrelated records. It is vital to understand the difference between a clustered index (how the data is physically sorted on the disk, usually the Primary Key) and a non-clustered index (a separate lookup table mapping to the physical data). Knowing which columns are heavily filtered and ensuring they are properly indexed is the difference between a query running in two seconds versus two hours.
 
-Incorrect (Forcing a full table scan by frequently filtering on an unindexed column)
 ```sql
-```
+# Incorrect (Forcing a full table scan by frequently filtering on an unindexed column)
+# Correct (Communicating with the DBA to create a non-clustered index for faster lookups)
 
-Correct (Communicating with the DBA to create a non-clustered index for faster lookups)
-```sql
 ```
 
 ### Execution Plans (EXPLAIN)
 
 The ultimate best practice for structural optimization is reading the database's execution plan to identify hidden bottlenecks like full table scans or expensive nested loops. The execution plan acts as a diagnostic map, revealing exactly where the database engine is spending its computational resources and memory. Learning to read and interpret these plans allows you to rewrite inefficient logic, validate your index usage, and confidently deploy high-performance code to production.
 
-Incorrect (Blindly running a slow query and hoping it finishes)
 ```sql
-```
+# Incorrect (Blindly running a slow query and hoping it finishes)
+# Correct (Using EXPLAIN to generate a roadmap of the query's performance cost before running it)
 
-Correct (Using EXPLAIN to generate a roadmap of the query's performance cost before running it)
-```sql
 ```
